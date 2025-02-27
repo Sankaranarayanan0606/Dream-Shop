@@ -29,6 +29,7 @@ public class Product {
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "Category")
     private Category category;
+
     @OneToMany(mappedBy = "Product", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Image> images;
 
