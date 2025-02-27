@@ -2,22 +2,42 @@ package com.sankar.dream_shop.Service.Product;
 
 import com.sankar.dream_shop.CustomException.ProductNotFoundException;
 import com.sankar.dream_shop.Repository.ProductRepository;
+import com.sankar.dream_shop.Request.AddProductRequest;
 import com.sankar.dream_shop.model.Category;
 import com.sankar.dream_shop.model.Product;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
-
+@Service
+@RequiredArgsConstructor
 public class ProductService implements InterfaceProductService {
 
-    @Autowired
-    private ProductRepository productRepository;
+    private final ProductRepository productRepository;
+
+
+    public ProductService(ProductRepository productRepository) {
+        this.productRepository = productRepository;
+    }
 
 
     @Override
-    public Product addProduct(Product product) {
+    public Product addProduct(AddProductRequest request) {
         return null;
+    }
+
+    private Product createProduct(AddProductRequest request , Category category)
+    {
+        return  new Product(
+                request.getName(),
+                request.getBrand(),
+                request.getPrice(),
+                request.getInventory(),
+                request.getDescription(),
+                category
+        );
     }
 
     @Override
@@ -76,16 +96,16 @@ public class ProductService implements InterfaceProductService {
 
     @Override
     public List<Product> getProductByName(String name) {
-        return List.of();
+        return productRepository.findByName(name);
     }
 
     @Override
     public List<Product> getProductByBrandAndName(String brand, String name) {
-        return List.of();
+        return productRepository.findBybrandAndName(brand, name);
     }
 
     @Override
     public Long countProductsByBrandAndName(String brand, String name) {
-        return 0L;
+        return productRepository.countByBrandAndName(brand, name);
     }
 }

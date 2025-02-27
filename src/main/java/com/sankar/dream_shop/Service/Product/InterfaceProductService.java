@@ -1,12 +1,13 @@
 package com.sankar.dream_shop.Service.Product;
 
+import com.sankar.dream_shop.Request.AddProductRequest;
 import com.sankar.dream_shop.model.Product;
 
 import java.util.List;
 
 public interface InterfaceProductService {
 
-    Product addProduct(Product product);
+    Product addProduct(AddProductRequest product);
     Product getProductById(Long id);
 
     void deleteProductById(Long id);
