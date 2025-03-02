@@ -1,8 +1,10 @@
 package com.sankar.dream_shop.Service.Product;
 
 import com.sankar.dream_shop.CustomException.ProductNotFoundException;
+import com.sankar.dream_shop.Repository.CategoryRepository;
 import com.sankar.dream_shop.Repository.ProductRepository;
 import com.sankar.dream_shop.Request.AddProductRequest;
+import com.sankar.dream_shop.Request.ProductUpdateRequest;
 import com.sankar.dream_shop.model.Category;
 import com.sankar.dream_shop.model.Product;
 import lombok.RequiredArgsConstructor;
@@ -11,21 +13,37 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class ProductService implements InterfaceProductService {
 
     private final ProductRepository productRepository;
+    private final  CategoryRepository categoryRepository;
+    @Autowired
+    private AddProductRequest request;
 
 
-    public ProductService(ProductRepository productRepository) {
+    public ProductService(ProductRepository productRepository, CategoryRepository categoryRepository) {
         this.productRepository = productRepository;
+        this.categoryRepository = categoryRepository;
     }
 
 
     @Override
     public Product addProduct(AddProductRequest request) {
-        return null;
+        //check if the is found in the DB
+        //if yes, set it as the new product \
+        //if no , save it asa new category
+        //the set as the new producrt category
+        Category category = Optional.ofNullable(categoryRepository.findByName(request.getCategory().getName()))
+                .orElseGet( () -> {
+                    Category newcategory = new Category(request.getCategory().getName());
+                    return  categoryRepository.save(newcategory);
+                });
+        request.setCategory(category);
+        return productRepository.save(createProduct(request, category));
     }
 
     private Product createProduct(AddProductRequest request , Category category)
@@ -57,6 +75,12 @@ public class ProductService implements InterfaceProductService {
     @Override
     public void updateProduct(Product product, Long product_id) {
 
+    }
+
+    private Product updateExistingProduct(Product existingProduct, ProductUpdateRequest request)
+    {
+        existingProduct.setName(existingProduct.getName());
+        return productRepository ;
     }
 
     @Override

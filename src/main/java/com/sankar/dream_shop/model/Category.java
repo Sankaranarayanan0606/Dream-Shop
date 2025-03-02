@@ -20,6 +20,13 @@ public class Category {
     private long id;
     private String name;
 
+    public Category(String name) {
+    }
+
+    public String getName() {
+        return name;
+    }
+
     @OneToMany(mappedBy = "category")
     private List<Product> products;
 }
