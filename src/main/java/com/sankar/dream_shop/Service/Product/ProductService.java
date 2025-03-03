@@ -9,7 +9,6 @@ import com.sankar.dream_shop.model.Category;
 import com.sankar.dream_shop.model.Product;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,10 +24,10 @@ public class ProductService implements InterfaceProductService {
     private AddProductRequest request;
 
 
-    public ProductService(ProductRepository productRepository, CategoryRepository categoryRepository) {
-        this.productRepository = productRepository;
-        this.categoryRepository = categoryRepository;
-    }
+//    public ProductService(ProductRepository productRepository, CategoryRepository categoryRepository) {
+//        this.productRepository = productRepository;
+//        this.categoryRepository = categoryRepository;
+//    }
 
 
     @Override
@@ -45,7 +44,7 @@ public class ProductService implements InterfaceProductService {
         request.setCategory(category);
         return productRepository.save(createProduct(request, category));
     }
-
+//helper method for addproduct
     private Product createProduct(AddProductRequest request , Category category)
     {
         return  new Product(
@@ -73,14 +72,25 @@ public class ProductService implements InterfaceProductService {
     }
 
     @Override
-    public void updateProduct(Product product, Long product_id) {
+    public Product updateProduct(ProductUpdateRequest request, Long product_id) {
 
+        return productRepository.findById(product_id)
+                .map(existingProduct -> updateExistingProduct(existingProduct, request))
+                .map(productRepository :: save)
+                .orElseThrow(() -> new ProductNotFoundException("Product not found!"));
     }
-
+//updateProduct method
     private Product updateExistingProduct(Product existingProduct, ProductUpdateRequest request)
     {
-        existingProduct.setName(existingProduct.getName());
-        return productRepository ;
+        existingProduct.setName(request.getName());
+        existingProduct.setBrand(request.getBrand());
+        existingProduct.setPrice(request.getPrice());
+        existingProduct.setInventory(request.getInventory());
+        existingProduct.setDescription(request.getDescription());
+
+        Category category = categoryRepository.findByName((request.getCategory().getName()));
+        existingProduct.setCategory(category);
+        return existingProduct;
     }
 
     @Override
@@ -97,6 +107,7 @@ public class ProductService implements InterfaceProductService {
     public void updateProduct(Product product, long product_id) {
 
     }
+
 
     @Override
     public List<Product> getAllProducts() {
